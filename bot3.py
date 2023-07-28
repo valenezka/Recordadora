@@ -34,10 +34,11 @@ async def on_message(message):
     await bot.process_commands(message)
 @bot.command()
 async def recordar(ctx, tiempo, *, evento):
-    try:
-        event_time = datetime.strptime(tiempo, r'%Y-%m-%d %H:%M') 
+    
+        event_time = datetime.strptime("2003-06-03-14:00", r'%Y-%m-%d-%H:%M') 
         user_id = ctx.author.id
-
+        print(tiempo)
+        print(evento)
         # Carga los eventos existentes desde el archivo JSON
         events = load_events()
 
@@ -45,28 +46,30 @@ async def recordar(ctx, tiempo, *, evento):
 
         # Agrega el nuevo evento al diccionario
         if user_id not in events:
-            events[user_id] = []
-        events[user_id].append({"event_text": evento, "event_time": event_time})
+            events[str(user_id)] = []
+        events[str(user_id)].append({"event_text": evento, "event_time": tiempo})
+
 
         # Guarda los eventos actualizados en el archivo JSON
         save_events(events)
 
         await ctx.send(f"Evento recordado: '{evento}' a las {tiempo}")
-    except ValueError:
-        await ctx.send("Formato de tiempo incorrecto. Utiliza el formato 'YYYY-MM-DD HH:MM'.")
+   
 
 # Función para comprobar y recordar los eventos programados
-@tasks.loop(seconds=60)  # Comprobar eventos cada 60 segundos
+@tasks.loop(seconds=30)  # Comprobar eventos cada 60 segundos
 async def check_events():
-    now = datetime.now()
+    
 
+    now = datetime.now()
+    print(now)
     # Cargar eventos desde el archivo JSON
     events = load_events()
-
+    print(events)
     # Recorrer todos los usuarios y verificar eventos
     for user_id, user_events in events.items():
         for event in user_events:
-            event_time = datetime.strptime(event["event_time"], '%Y-%m-%d %H:%M')
+            event_time = datetime.strptime(event["event_time"], r'%Y-%m-%d %H:%M')
             if event_time <= now:
                 event_text = event["event_text"]
                 user = bot.get_user(int(user_id))
@@ -78,4 +81,4 @@ async def saludar(ctx):
     print("comando recibido")
     await ctx.send("Holaaa")
 
-bot.run("MTEzMzg3MjM5MTk5MTM0NTI2Mg.GpTuBj.ktKue1h_GdcJyITZH28rDdvLB5JmiJSNaWEoCc")
+bot.run("MTEzMzg3MjM5MTk5MTM0NTI2Mg.G1401L.OXbF3d94kk4A5dZhrluaTPzZa5gseBTzeLyzzA")
