@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands, tasks
 import json
 from datetime import datetime
-
+import asyncio
 intents= discord.Intents.all()
 # Nombre del archivo JSON para guardar los eventos
 json_file = "event_reminder.json"
@@ -51,18 +51,18 @@ async def recordar(ctx, cantidad: int, *, evento):
     for i in range(cantidad):
         await ctx.send(f"Ingrese el tiempo para el recordatorio {i + 1} (Formato: YYYY-MM-DD-HH:MM):")
 
-        # try:
-        #     # Espera la respuesta del usuario con el tiempo
-        #     time_response = await bot.wait_for("message", timeout=60.0, check=lambda m: m.author == ctx.author)
+        try:
+            # Espera la respuesta del usuario con el tiempo
+            time_response = await bot.wait_for("message", timeout=60.0, check=lambda m: m.author == ctx.author)
 
-        #     # Verifica si el tiempo proporcionado es válido
-        event_time = datetime.strptime(time_response.content, r'%Y-%m-%d-%H:%M')
-        # except ValueError:
-        #     await ctx.send("Formato de tiempo inválido. Vuelve a intentarlo.")
-        #     return
-        # except:
-        #     await ctx.send("Tiempo de espera agotado. Vuelve a intentarlo.")
-        #     return
+            # Verifica si el tiempo proporcionado es válido
+            event_time = datetime.strptime(time_response.content, r'%Y-%m-%d-%H:%M')
+        except ValueError:
+            await ctx.send("Formato de tiempo inválido. Vuelve a intentarlo.")
+            return
+        except asyncio.TimeoutError:
+            await ctx.send("Tiempo de espera agotado. Vuelve a intentarlo.")
+            return
 
         new_events.append({"event_text": evento, "event_time": event_time.strftime(r'%Y-%m-%d-%H:%M')})
 
@@ -133,4 +133,4 @@ async def saludar(ctx):
     print("comando recibido")
     await ctx.send("Holaaa")
 
-bot.run("MTEzMzg3MjM5MTk5MTM0NTI2Mg.G73ixq.kq-5oQRzMI6xYxvmx2GnE49VsYv6ydcDP5vBZo")
+bot.run("TOKEN")
